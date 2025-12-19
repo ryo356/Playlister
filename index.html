@@ -10,7 +10,6 @@
   <meta property="og:title" content="Playlist Bridge｜他アプリでも同じプレイリストを作れる" />
   <meta property="og:description" content="プレイリストURLを貼るだけ。相手は自分の音楽アプリにインポートできる（②）＋そのまま開く（①）。" />
   <meta property="og:type" content="website" />
-  <!-- ↓自分の公開URLに差し替え推奨（未設定でも動く） -->
   <meta property="og:url" content="" />
 
   <style>
@@ -24,15 +23,11 @@
       --mut:rgba(255,255,255,.72);
       --mut2:rgba(255,255,255,.55);
       --br:rgba(255,255,255,.14);
-      --br2:rgba(255,255,255,.20);
-      --glow:rgba(110,231,255,.25);
-      --ok:#6ee7ff;
-      --pink:#fb7185;
-      --violet:#a78bfa;
-      --mint:#34d399;
-      --warn:#fbbf24;
       --shadow: rgba(0,0,0,.45);
       --radius: 24px;
+      --ok:#6ee7ff;
+      --pink:#fb7185;
+      --warn:#fbbf24;
     }
     *{box-sizing:border-box}
     html, body {height: 100%;}
@@ -47,8 +42,6 @@
         linear-gradient(180deg, var(--bg0), var(--bg1) 40%, var(--bg2));
       overflow-x:hidden;
     }
-
-    /* ===== Animated Deep Sea Background ===== */
     .bg{
       position:fixed; inset:0; pointer-events:none; z-index:-2;
       background:
@@ -61,7 +54,6 @@
       animation: drift 14s ease-in-out infinite alternate;
     }
     @keyframes drift{ from{transform:translateY(0)} to{transform:translateY(-22px)} }
-
     .waves{
       position:fixed; inset:-30% -20% -30% -20%;
       z-index:-3; pointer-events:none;
@@ -75,14 +67,10 @@
     }
     @keyframes slowspin{ from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
 
-    /* ===== Jellyfish swarm (CSS animated) ===== */
-    .jelly-swarm{
-      position:fixed; inset:0; pointer-events:none; z-index:-1;
-      overflow:hidden;
-    }
+    /* Jellyfish */
+    .jelly-swarm{position:fixed; inset:0; pointer-events:none; z-index:-1; overflow:hidden;}
     .jelly{
-      position:absolute;
-      width:72px; height:92px;
+      position:absolute; width:72px; height:92px;
       opacity:.85;
       filter: drop-shadow(0 14px 20px rgba(0,0,0,.35));
       animation: floatUp linear infinite;
@@ -108,48 +96,33 @@
     }
     .jelly .tentacles{
       position:absolute; left:50%; top:48px; transform:translateX(-50%);
-      width:90%; height:44px;
-      display:flex; justify-content:space-between;
-      padding:0 10px;
+      width:90%; height:44px; display:flex; justify-content:space-between; padding:0 10px;
     }
     .t{
-      width:6px; height:46px;
-      border-radius: 999px;
+      width:6px; height:46px; border-radius: 999px;
       background: linear-gradient(180deg, rgba(110,231,255,.25), rgba(167,139,250,.16), transparent 90%);
       border: 1px solid rgba(255,255,255,.08);
       animation: wiggle 2.2s ease-in-out infinite;
-      transform-origin: top;
-      opacity:.9;
+      transform-origin: top; opacity:.9;
     }
     .t:nth-child(2){animation-delay:.25s}
     .t:nth-child(3){animation-delay:.5s}
     .t:nth-child(4){animation-delay:.1s}
-    @keyframes wiggle{
-      0%,100%{ transform: rotate(-5deg) }
-      50%{ transform: rotate(7deg) }
-    }
-    @keyframes floatUp{
-      from{ transform: translate3d(0, 120vh, 0) rotate(0deg); }
-      to  { transform: translate3d(0, -30vh, 0) rotate(8deg); }
-    }
+    @keyframes wiggle{0%,100%{transform:rotate(-5deg)}50%{transform:rotate(7deg)}}
+    @keyframes floatUp{from{transform:translate3d(0,120vh,0) rotate(0deg)}to{transform:translate3d(0,-30vh,0) rotate(8deg)}}
 
-    /* Optional: real GIF overlay (put your gifs in /assets if you want) */
     .gif-jelly{
-      position:absolute;
-      width:84px; height:84px;
-      opacity:.55;
-      pointer-events:none;
+      position:absolute; width:84px; height:84px;
+      opacity:.55; pointer-events:none;
       animation: floatUp linear infinite;
       filter: drop-shadow(0 16px 22px rgba(0,0,0,.35));
       border-radius: 18px;
       mix-blend-mode: screen;
     }
 
-    /* ===== Layout ===== */
     .wrap{max-width:1040px; margin:0 auto; padding:26px 16px 70px}
     header{
-      display:flex; gap:14px;
-      align-items:center; justify-content:space-between; flex-wrap:wrap;
+      display:flex; gap:14px; align-items:center; justify-content:space-between; flex-wrap:wrap;
       margin-bottom:14px;
     }
     .brand{display:flex; gap:12px; align-items:center}
@@ -162,24 +135,17 @@
       position:relative;
     }
     .logo:after{
-      content:"";
-      position:absolute; right:10px; top:10px;
+      content:""; position:absolute; right:10px; top:10px;
       width:10px; height:10px; border-radius:50%;
-      background:rgba(255,255,255,.62);
-      opacity:.8;
+      background:rgba(255,255,255,.62); opacity:.8;
     }
     h1{margin:0; font-size:18px}
     .tag{color:var(--mut); font-size:13px; margin-top:2px}
     .pill{
-      padding:8px 10px;
-      border-radius:999px;
-      border:1px solid var(--br);
-      background: rgba(255,255,255,.05);
-      color: var(--mut);
-      font-size:12px;
+      padding:8px 10px; border-radius:999px; border:1px solid var(--br);
+      background: rgba(255,255,255,.05); color: var(--mut); font-size:12px;
       backdrop-filter: blur(6px);
     }
-
     main{display:grid; grid-template-columns: 1.15fr .85fr; gap:14px}
     @media (max-width:900px){ main{grid-template-columns:1fr} }
 
@@ -208,8 +174,7 @@
         radial-gradient(620px 240px at 85% 30%, rgba(167,139,250,.18), transparent 58%),
         linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.04));
       box-shadow: 0 12px 45px rgba(0,0,0,.35);
-      position:relative;
-      overflow:hidden;
+      position:relative; overflow:hidden;
     }
     .hero h2{margin:0 0 6px; font-size:18px}
     .hero p{margin:0; color:var(--mut); font-size:13px; line-height:1.65}
@@ -217,8 +182,20 @@
       position:absolute; right:-30px; top:-30px;
       width:140px; height:140px; border-radius:50%;
       background: radial-gradient(circle at 40% 40%, rgba(110,231,255,.35), transparent 70%);
-      filter: blur(2px);
-      opacity:.9;
+      filter: blur(2px); opacity:.9;
+    }
+
+    .section-title{
+      margin:0 0 10px;
+      font-size:14px;
+      color: rgba(255,255,255,.86);
+      display:flex; gap:8px; align-items:center;
+    }
+    .badge{
+      font-size:12px; padding:4px 8px; border-radius:999px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      color: rgba(255,255,255,.78);
     }
 
     label{display:block; font-size:12px; color:var(--mut); margin:12px 0 6px}
@@ -280,41 +257,35 @@
     .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Noto Sans Mono", "Courier New", monospace; font-size:12px}
     .hint{font-size:12px; color:var(--mut); margin-top:10px; line-height:1.65}
     .status{
-      margin-top:12px;
-      padding:12px 12px;
+      margin-top:12px; padding:12px 12px;
       border-radius:18px;
       border:1px dashed rgba(255,255,255,.20);
       background: rgba(0,0,0,.18);
       color: var(--mut);
-      font-size:13px;
-      line-height:1.65;
+      font-size:13px; line-height:1.65;
     }
     .status strong{color:var(--txt)}
     .ok{color:var(--ok)}
     .warn{color:var(--warn)}
-    .mini{
-      font-size:12px;
-      color: var(--mut2);
-      margin-top:8px;
-      line-height:1.6;
+    .mini{font-size:12px; color: var(--mut2); margin-top:8px; line-height:1.6;}
+    .list{margin:10px 0 0; padding:0 0 0 18px; color:var(--mut); font-size:13px; line-height:1.75;}
+    .kbd{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Noto Sans Mono", "Courier New", monospace;
+      font-size: 12px;
+      padding: 2px 6px;
+      border-radius: 8px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      color: rgba(255,255,255,.82);
     }
-    .list{
-      margin:10px 0 0;
-      padding:0 0 0 18px;
-      color:var(--mut);
-      font-size:13px;
-      line-height:1.75;
-    }
-    footer{margin-top:12px; color:rgba(255,255,255,.45); font-size:12px}
 
-    /* ===== Modal ===== */
+    /* Modal */
     .modal-backdrop{
       position:fixed; inset:0; display:none;
       background: rgba(0,0,0,.55);
       backdrop-filter: blur(6px);
       z-index: 50;
-      align-items:center;
-      justify-content:center;
+      align-items:center; justify-content:center;
       padding: 18px;
     }
     .modal{
@@ -327,8 +298,7 @@
         linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.04));
       box-shadow: 0 24px 90px rgba(0,0,0,.6);
       padding: 16px;
-      position:relative;
-      overflow:hidden;
+      position:relative; overflow:hidden;
     }
     .modal h3{margin:0 0 6px; font-size:16px}
     .modal p{margin:0 0 10px; color:var(--mut); font-size:13px; line-height:1.7}
@@ -343,10 +313,7 @@
     }
     .close:hover{background:rgba(255,255,255,.10)}
     .toast{
-      position: fixed;
-      left: 50%;
-      bottom: 18px;
-      transform: translateX(-50%);
+      position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%);
       background: rgba(0,0,0,.35);
       border:1px solid rgba(255,255,255,.16);
       border-radius: 999px;
@@ -355,20 +322,9 @@
       font-size: 13px;
       backdrop-filter: blur(10px);
       box-shadow: 0 12px 40px rgba(0,0,0,.35);
-      display:none;
-      z-index: 60;
-    }
-    .kbd{
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Noto Sans Mono", "Courier New", monospace;
-      font-size: 12px;
-      padding: 2px 6px;
-      border-radius: 8px;
-      border:1px solid rgba(255,255,255,.14);
-      background: rgba(255,255,255,.06);
-      color: rgba(255,255,255,.82);
+      display:none; z-index: 60;
     }
 
-    /* Reduce motion */
     @media (prefers-reduced-motion: reduce){
       .bg, .waves, .jelly, .gif-jelly { animation: none !important; }
       button, a.btn { transition: none !important; }
@@ -380,7 +336,6 @@
   <div class="waves"></div>
   <div class="bg"></div>
 
-  <!-- Jellyfish background (CSS) -->
   <div class="jelly-swarm" id="swarm" aria-hidden="true"></div>
 
   <div class="wrap">
@@ -389,23 +344,30 @@
         <div class="logo" aria-hidden="true"></div>
         <div>
           <h1>Playlist Bridge <span class="pill">deep-sea pop ✨</span></h1>
-          <div class="tag">② 相手のアプリに“同じプレイリストを作る”を軸に、① “そのまま開く”も保険で。</div>
+          <div class="tag">プレイリストURLを貼るだけで、相手は自分の音楽アプリに同じプレイリストを作れます。</div>
         </div>
       </div>
-      <div class="pill">GitHub Pages / 1ページ / 無料運用</div>
+      <div class="pill">無料 / 1ページ / GitHub Pages</div>
     </header>
 
     <div class="hero">
       <div class="spark"></div>
-      <h2>URL貼るだけ。あとは“移住”させる。</h2>
+      <h2>共有がラクになる：URL → インポート</h2>
       <p>
-        ここにプレイリストURL → <strong>②</strong>でTuneMyMusicへ最短で流す（相手は自分の音楽サービスにインポート）。<br/>
-        とりあえず聴く用に<strong>①</strong>の各アプリボタンも置いとく。クラゲは…増やしといた 🪼
+        <span class="badge">② メイン</span> 相手のアプリに「同じプレイリストを作る」（TuneMyMusicでインポート）<br/>
+        <span class="badge">① 保険</span> とりあえず聴く用に、各アプリで「そのまま開く」ボタンも用意
       </p>
     </div>
 
     <main style="margin-top:14px;">
       <section class="card">
+        <div class="section-title">使い方 <span class="badge">3ステップ</span></div>
+        <ol class="list" style="margin-top:0;">
+          <li>共有したい <strong>プレイリストのURL</strong> を貼る</li>
+          <li><strong>リンク生成する</strong> を押す</li>
+          <li><strong>②</strong>でインポート（相手のアプリに作る）／<strong>①</strong>で開く（聴くだけ）</li>
+        </ol>
+
         <label for="plUrl">プレイリストURL（Apple Music / Spotify / YouTube Music）</label>
         <input id="plUrl" type="url" placeholder="例: https://open.spotify.com/playlist/... / https://music.apple.com/... / https://music.youtube.com/playlist?list=..." autocomplete="off" />
 
@@ -416,15 +378,13 @@
         </div>
 
         <div id="status" class="status">
-          状態：まだURLが入ってないよ。貼って <span class="kbd">Enter</span> でもOK。
+          状態：URLを貼って <span class="kbd">Enter</span> でもOK。
         </div>
 
         <div class="row" id="actions" style="display:none; margin-top:12px;">
-          <!-- ② Main -->
-          <button class="primary" id="btnHow">② 自分の音楽アプリにプレイリストを作る</button>
-          <button class="pink" id="btnCopyShare">共有リンクをコピー（このサイト）</button>
+          <button class="primary" id="btnHow">② 相手のアプリにプレイリストを作る（インポート）</button>
+          <button class="pink" id="btnCopyShare">共有リンクをコピー（このページ）</button>
 
-          <!-- ① Backup -->
           <a class="btn" id="btnOpen" href="#" target="_blank" rel="noopener">① 元URLを開く</a>
           <a class="btn" id="btnApple" href="#" target="_blank" rel="noopener">Apple Music</a>
           <a class="btn" id="btnSpotify" href="#" target="_blank" rel="noopener">Spotify</a>
@@ -432,61 +392,56 @@
         </div>
 
         <div class="hint">
-          <strong class="ok">②の中身：</strong>
-          TuneMyMusicの「Share playlists between music services」機能は、プレイリストをアップロードすると共有ページを作れて、
-          友達は「元のプレイリストを開く」か「自分のライブラリへインポート」できる仕組み。 :contentReference[oaicite:1]{index=1}
-          <div class="mini">
-            ※このサイトはログイン情報を扱わない（安心設計）。URLをコピー＆案内するだけ。
-          </div>
+          <strong class="ok">ポイント：</strong>
+          このサイトはログイン情報を扱いません。URLを整理して、インポートの導線を作るだけです。
+          TuneMyMusicの「Share playlists between music services」機能で、友達は自分のサービスへインポートできます。 
         </div>
       </section>
 
       <aside class="card">
-        <h3 style="margin:0 0 8px; font-size:16px;">相手がやること（②）</h3>
+        <div class="section-title">相手側のやり方 <span class="badge">②</span></div>
         <ol class="list">
-          <li>あなたがこのページでURLを貼る</li>
-          <li><strong>「② 自分の音楽アプリにプレイリストを作る」</strong>を押す</li>
-          <li>TuneMyMusicでソース（元サービス）を選ぶ → URL貼る</li>
-          <li>相手が転送先サービスでログインして許可</li>
-          <li>相手のアプリに新しいプレイリストができる</li>
+          <li>あなたから届いた「共有リンク」を開く</li>
+          <li><strong>②</strong>のボタンを押す</li>
+          <li>TuneMyMusicで「元サービス」を選ぶ → URL貼り付け</li>
+          <li>転送先サービスでログインして許可</li>
+          <li>相手のアプリに新しいプレイリストが作られる</li>
         </ol>
 
         <div class="status" style="margin-top:12px;">
-          <strong>プチTips</strong><br/>
-          「共有リンクをコピー（このサイト）」を送れば、相手は開いた瞬間にURLが入った状態でスタートできる（手間減る）。
+          <strong>共有のコツ：</strong><br/>
+          「共有リンクをコピー（このページ）」を送ると、相手は開いた瞬間にURLが入力済みでスタートできます。
         </div>
 
-        <footer>
-          🪼クラゲ増量中：もし“本物のGIF”も使いたければ、<span class="mono">/assets</span>に置いて参戦させられる（下で自動で試す）。
-        </footer>
+        <div class="mini" style="margin-top:10px;">
+          🪼GIFクラゲも増やせます：リポジトリに <span class="mono">assets/jelly1.gif</span> などを置くと背景に混ざります（任意）。
+        </div>
       </aside>
     </main>
   </div>
 
-  <!-- Modal -->
   <div class="modal-backdrop" id="modalBackdrop" role="dialog" aria-modal="true" aria-label="TuneMyMusic guide">
     <div class="modal">
       <button class="close" id="btnClose" aria-label="close">✕</button>
-      <h3>② TuneMyMusicで“同じプレイリスト”を作る（最短手順）</h3>
+      <h3>② インポート（TuneMyMusic）手順</h3>
       <p>
-        いま貼ったURLは <strong>クリップボードにコピー</strong>してあるよ。TuneMyMusicへ行って、貼り付けて進めてね。
+        プレイリストURLは <strong>自動でコピー</strong>済みです。TuneMyMusicで貼り付けて進めてください。
       </p>
 
       <div class="row" style="margin-top:10px;">
         <a class="btn primary" id="btnTMMShare" href="https://www.tunemymusic.com/features/share" target="_blank" rel="noopener">
-          TuneMyMusicのShareを開く
+          TuneMyMusic（Share）を開く
         </a>
         <a class="btn" id="btnTMMTransfer" href="https://www.tunemymusic.com/" target="_blank" rel="noopener">
-          TuneMyMusicトップ（Transfer）
+          TuneMyMusic（Transfer）を開く
         </a>
         <button class="btn pink" id="btnCopyURL">URLをもう一回コピー</button>
       </div>
 
       <div class="status" style="margin-top:12px;">
-        <strong>貼り付け先：</strong> TuneMyMusic側で「Upload your music by copying the playlist link …」の流れでOK。 :contentReference[oaicite:2]{index=2}
+        <strong>貼り付け先：</strong> TuneMyMusic側で「プレイリストリンクをコピーしてアップロード」の流れでOK。 
         <div class="mini">
-          <span class="warn">注意：</span> TuneMyMusicにURLを“自動注入”する公式パラメータは公開仕様として確証が取れなかったので、
-          あえて「確実に動く最短導線」にしてる（壊れにくい）。
+          ※TuneMyMusicにURLを“自動注入”する公式パラメータは仕様として確証が取れなかったため、確実に動く導線にしています。
         </div>
       </div>
     </div>
@@ -514,13 +469,11 @@
 
   const modalBackdrop = document.getElementById('modalBackdrop');
   const btnClose = document.getElementById('btnClose');
-  const btnTMMShare = document.getElementById('btnTMMShare');
-  const btnTMMTransfer = document.getElementById('btnTMMTransfer');
   const btnCopyURL = document.getElementById('btnCopyURL');
 
   const toast = document.getElementById('toast');
 
-  // === Jellyfish generation (lots) ===
+  // Jellyfish
   const swarm = document.getElementById('swarm');
   function rand(min, max){ return Math.random() * (max - min) + min; }
 
@@ -555,7 +508,6 @@
   }
 
   function seedSwarm(){
-    // CSS jellyfish (always works)
     const count = window.matchMedia('(max-width: 900px)').matches ? 14 : 22;
     swarm.innerHTML = '';
     for(let i=0;i<count;i++){
@@ -564,16 +516,10 @@
       swarm.appendChild(createJelly(x, size));
     }
 
-    // OPTIONAL: real GIF jellyfish (if user places files in /assets)
-    // Put your gifs here:
+    // Optional GIF jellyfish (place files in /assets)
     const gifPaths = [
-      'assets/jelly1.gif',
-      'assets/jelly2.gif',
-      'assets/jelly3.gif',
-      'assets/jelly4.gif'
+      'assets/jelly1.gif','assets/jelly2.gif','assets/jelly3.gif','assets/jelly4.gif'
     ];
-
-    // We'll try to add a few; if 404, browser just won't show them (no harm).
     const gifCount = window.matchMedia('(max-width: 900px)').matches ? 4 : 7;
     for(let i=0;i<gifCount;i++){
       const img = document.createElement('img');
@@ -593,7 +539,7 @@
   seedSwarm();
   window.addEventListener('resize', ()=>{ seedSwarm(); }, {passive:true});
 
-  // === Utils ===
+  // Utils
   function escapeHtml(s){
     return s.replace(/[&<>"']/g, c => ({
       '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'
@@ -611,7 +557,6 @@
   function detectPlatform(u){
     const url = new URL(u);
     const host = url.hostname.toLowerCase();
-
     if(host.includes('spotify.com')) return 'spotify';
     if(host.includes('music.apple.com')) return 'apple';
     if(host.includes('music.youtube.com')) return 'ytm';
@@ -632,7 +577,6 @@
       toastShow('コピーしたよ');
       return true;
     }catch(e){
-      // fallback
       const ta = document.createElement('textarea');
       ta.value = txt;
       ta.style.position = 'fixed';
@@ -660,52 +604,35 @@
   }
   setOGUrlIfEmpty();
 
-  // === Main build ===
   function buildLinks(u){
     const platform = detectPlatform(u);
 
-    // ① Original
     btnOpen.href = u;
-
-    // ① Per-service
     btnApple.href  = (platform === 'apple')  ? u : 'https://music.apple.com/';
     btnSpotify.href= (platform === 'spotify')? u : 'https://open.spotify.com/';
     btnYTM.href    = (platform === 'ytm')    ? u : 'https://music.youtube.com/';
 
-    const pLabel = ({
-      apple:'Apple Music',
-      spotify:'Spotify',
-      ytm:'YouTube Music',
-      unknown:'不明（でもOK）'
-    })[platform];
+    const pLabel = ({apple:'Apple Music', spotify:'Spotify', ytm:'YouTube Music', unknown:'不明（でもOK）'})[platform];
 
     status.innerHTML =
       '検出：<strong>' + pLabel + '</strong><br/>' +
-      '次は <strong>②</strong> を押すだけ。URLは自動でコピーするよ。<br/>' +
+      '②に進むため、URLを自動でコピーしました。<br/>' +
       '<span class="mono">' + escapeHtml(u) + '</span>';
 
     actions.style.display = 'flex';
-
-    // Auto copy playlist URL for TMM flow
     copyText(u);
-
-    // Save current
     window.__PB = { playlistUrl: u, platform };
   }
 
-  function openModal(){
-    modalBackdrop.style.display = 'flex';
-  }
-  function closeModal(){
-    modalBackdrop.style.display = 'none';
-  }
+  function openModal(){ modalBackdrop.style.display = 'flex'; }
+  function closeModal(){ modalBackdrop.style.display = 'none'; }
 
-  // === Event handlers ===
+  // Events
   btnBuild.addEventListener('click', ()=>{
     const u = safeURL(elUrl.value.trim());
     if(!u){
       actions.style.display = 'none';
-      status.innerHTML = '<span class="warn">URLが正しくないっぽい。</span> https:// から始まるプレイリストURLを貼ってね。';
+      status.innerHTML = '<span class="warn">URLが正しくないようです。</span> https:// から始まるプレイリストURLを貼ってください。';
       return;
     }
     buildLinks(u);
@@ -714,7 +641,7 @@
   btnClear.addEventListener('click', ()=>{
     elUrl.value = '';
     actions.style.display = 'none';
-    status.textContent = '状態：クリアしたよ。URL貼って〜';
+    status.textContent = '状態：クリアしました。URLを貼ってください。';
     elUrl.focus();
     window.__PB = null;
   });
@@ -728,35 +655,27 @@
     if(e.key === 'Enter') btnBuild.click();
   });
 
-  // ② button: show instructions and open TMM share page option
   btnHow.addEventListener('click', ()=>{
-    if(!window.__PB?.playlistUrl){
-      toastShow('まずURLを貼ってね');
-      return;
-    }
-    // ensure copied
+    if(!window.__PB?.playlistUrl){ toastShow('まずURLを貼ってください'); return; }
     copyText(window.__PB.playlistUrl);
     openModal();
   });
 
   btnClose.addEventListener('click', closeModal);
-  modalBackdrop.addEventListener('click', (e)=>{
-    if(e.target === modalBackdrop) closeModal();
-  });
+  modalBackdrop.addEventListener('click', (e)=>{ if(e.target === modalBackdrop) closeModal(); });
 
   btnCopyURL.addEventListener('click', ()=>{
     if(window.__PB?.playlistUrl) copyText(window.__PB.playlistUrl);
   });
 
-  // Share link of THIS site (prefilled url)
   btnCopyShare.addEventListener('click', async ()=>{
     const u = window.__PB?.playlistUrl;
-    if(!u){ toastShow('まずURLを貼ってね'); return; }
+    if(!u){ toastShow('まずURLを貼ってください'); return; }
     const shareUrl = location.origin + location.pathname + '?url=' + encodeURIComponent(u);
     await copyText(shareUrl);
     status.innerHTML =
-      '<strong class="ok">共有リンクをコピーしたよ。</strong><br/>' +
-      '相手にこのURLを送れば、開いた瞬間にプレイリストURLが入力済みになる。<br/>' +
+      '<strong class="ok">共有リンクをコピーしました。</strong><br/>' +
+      '相手がこのURLを開くと、プレイリストURLが入力済みでスタートできます。<br/>' +
       '<span class="mono">' + escapeHtml(shareUrl) + '</span>';
   });
 
@@ -769,7 +688,7 @@
     if(!safe) return;
     elUrl.value = safe;
     buildLinks(safe);
-    toastShow('URLを自動入力したよ');
+    toastShow('URLを自動入力しました');
   })();
 
 })();

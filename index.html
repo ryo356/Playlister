@@ -3,220 +3,496 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Playlist Bridge（β）</title>
-  <meta name="description" content="プレイリストURLを貼るだけ。相手は自分の音楽アプリにインポートできる。" />
+  <title>Playlist Bridge｜他アプリでも同じプレイリストを作れる</title>
+  <meta name="description" content="プレイリストURLを貼るだけ。相手は自分の音楽アプリにインポートできる（TuneMyMusic導線）＋そのまま開くも用意。" />
+
+  <!-- OGP（共有で映える） -->
+  <meta property="og:title" content="Playlist Bridge｜他アプリでも同じプレイリストを作れる" />
+  <meta property="og:description" content="プレイリストURLを貼るだけ。相手は自分の音楽アプリにインポートできる（②）＋そのまま開く（①）。" />
+  <meta property="og:type" content="website" />
+  <!-- ↓自分の公開URLに差し替え推奨（未設定でも動く） -->
+  <meta property="og:url" content="" />
+
   <style>
     :root{
-      --bg1:#061326; --bg2:#04101f; --card:rgba(255,255,255,.06);
-      --txt:rgba(255,255,255,.92); --mut:rgba(255,255,255,.70);
-      --br:rgba(255,255,255,.14); --glow:rgba(110,231,255,.22);
+      --bg0:#020711;
+      --bg1:#041a2b;
+      --bg2:#061f3a;
+      --card:rgba(255,255,255,.07);
+      --card2:rgba(255,255,255,.05);
+      --txt:rgba(255,255,255,.92);
+      --mut:rgba(255,255,255,.72);
+      --mut2:rgba(255,255,255,.55);
+      --br:rgba(255,255,255,.14);
+      --br2:rgba(255,255,255,.20);
+      --glow:rgba(110,231,255,.25);
       --ok:#6ee7ff;
+      --pink:#fb7185;
+      --violet:#a78bfa;
+      --mint:#34d399;
+      --warn:#fbbf24;
+      --shadow: rgba(0,0,0,.45);
+      --radius: 24px;
     }
     *{box-sizing:border-box}
+    html, body {height: 100%;}
     body{
       margin:0; color:var(--txt);
-      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Hiragino Sans", "Noto Sans JP", "Meiryo", Arial, sans-serif;
-      background: radial-gradient(1200px 800px at 20% 10%, rgba(110,231,255,.12), transparent 60%),
-                  radial-gradient(900px 700px at 80% 30%, rgba(167,139,250,.10), transparent 55%),
-                  linear-gradient(180deg, var(--bg1), var(--bg2));
-      min-height:100vh;
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+                   "Hiragino Sans", "Noto Sans JP", "Meiryo", Arial, sans-serif;
+      background:
+        radial-gradient(1200px 800px at 10% 10%, rgba(110,231,255,.16), transparent 60%),
+        radial-gradient(900px 700px at 80% 25%, rgba(167,139,250,.14), transparent 55%),
+        radial-gradient(900px 700px at 45% 95%, rgba(52,211,153,.10), transparent 55%),
+        linear-gradient(180deg, var(--bg0), var(--bg1) 40%, var(--bg2));
       overflow-x:hidden;
     }
-    /* subtle animated background */
-    .bg-bubbles{
-      position:fixed; inset:0; pointer-events:none; opacity:.55;
+
+    /* ===== Animated Deep Sea Background ===== */
+    .bg{
+      position:fixed; inset:0; pointer-events:none; z-index:-2;
       background:
-        radial-gradient(10px 10px at 10% 20%, rgba(110,231,255,.18), transparent 60%),
-        radial-gradient(14px 14px at 80% 35%, rgba(110,231,255,.14), transparent 62%),
-        radial-gradient(8px 8px at 55% 70%, rgba(167,139,250,.14), transparent 60%),
-        radial-gradient(12px 12px at 25% 80%, rgba(110,231,255,.12), transparent 62%);
-      filter: blur(.2px);
-      animation: drift 12s ease-in-out infinite alternate;
-    }
-    @keyframes drift{ from{transform:translateY(0)} to{transform:translateY(-18px)} }
-
-    .wrap{max-width:980px; margin:0 auto; padding:28px 18px 60px}
-    header{display:flex; gap:14px; align-items:center; justify-content:space-between; flex-wrap:wrap}
-    .brand{
-      display:flex; align-items:center; gap:12px;
-    }
-    .logo{
-      width:44px; height:44px; border-radius:16px;
-      background: radial-gradient(circle at 30% 30%, rgba(110,231,255,.9), rgba(110,231,255,.25) 40%, rgba(167,139,250,.18) 75%, rgba(255,255,255,.06));
-      box-shadow: 0 0 0 1px var(--br), 0 0 40px rgba(110,231,255,.18);
-      position:relative;
-    }
-    .logo:after{
-      content:""; position:absolute; inset:10px 12px auto auto;
-      width:10px; height:10px; border-radius:50%;
-      background:rgba(255,255,255,.6);
-      filter: blur(.2px);
+        radial-gradient(3px 3px at 12% 18%, rgba(255,255,255,.25), transparent 60%),
+        radial-gradient(2px 2px at 82% 35%, rgba(255,255,255,.22), transparent 60%),
+        radial-gradient(2px 2px at 55% 70%, rgba(255,255,255,.18), transparent 60%),
+        radial-gradient(3px 3px at 25% 82%, rgba(255,255,255,.20), transparent 60%);
       opacity:.7;
+      filter: blur(.2px);
+      animation: drift 14s ease-in-out infinite alternate;
     }
-    h1{font-size:20px; margin:0}
-    .tag{color:var(--mut); font-size:13px; margin-top:2px}
-    .pill{
-      padding:8px 10px; border-radius:999px; border:1px solid var(--br);
-      background:rgba(255,255,255,.04); color:var(--mut); font-size:12px;
+    @keyframes drift{ from{transform:translateY(0)} to{transform:translateY(-22px)} }
+
+    .waves{
+      position:fixed; inset:-30% -20% -30% -20%;
+      z-index:-3; pointer-events:none;
+      background:
+        radial-gradient(900px 400px at 20% 30%, rgba(110,231,255,.10), transparent 60%),
+        radial-gradient(800px 380px at 85% 55%, rgba(167,139,250,.09), transparent 62%),
+        radial-gradient(700px 360px at 55% 75%, rgba(52,211,153,.06), transparent 62%);
+      animation: slowspin 40s linear infinite;
+      opacity:.8;
+      filter: blur(10px);
     }
+    @keyframes slowspin{ from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
 
-    main{margin-top:18px; display:grid; grid-template-columns: 1.1fr .9fr; gap:14px}
-    @media (max-width:860px){ main{grid-template-columns:1fr} }
-
-    .card{
-      border:1px solid var(--br);
-      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
-      border-radius:22px;
-      box-shadow: 0 10px 50px rgba(0,0,0,.35);
-      padding:16px;
+    /* ===== Jellyfish swarm (CSS animated) ===== */
+    .jelly-swarm{
+      position:fixed; inset:0; pointer-events:none; z-index:-1;
+      overflow:hidden;
+    }
+    .jelly{
+      position:absolute;
+      width:72px; height:92px;
+      opacity:.85;
+      filter: drop-shadow(0 14px 20px rgba(0,0,0,.35));
+      animation: floatUp linear infinite;
+      transform: translateZ(0);
+    }
+    .jelly .bell{
+      width:100%; height:52px;
+      border-radius: 40px 40px 24px 24px;
+      background:
+        radial-gradient(circle at 30% 30%, rgba(255,255,255,.70), rgba(255,255,255,.20) 35%, rgba(110,231,255,.26) 70%, rgba(167,139,250,.18));
+      border: 1px solid rgba(255,255,255,.18);
+      box-shadow: 0 0 0 1px rgba(110,231,255,.06), 0 0 26px rgba(110,231,255,.10);
       position:relative;
       overflow:hidden;
     }
-    .card:before{
-      content:""; position:absolute; inset:-1px;
-      background: radial-gradient(600px 200px at 10% 0%, rgba(110,231,255,.18), transparent 60%);
-      pointer-events:none;
+    .jelly .bell:after{
+      content:"";
+      position:absolute; inset:-40% -40% auto -40%;
+      height:90px;
+      background: radial-gradient(circle at 40% 70%, rgba(110,231,255,.30), transparent 60%);
+      transform: rotate(10deg);
+      opacity:.8;
+    }
+    .jelly .tentacles{
+      position:absolute; left:50%; top:48px; transform:translateX(-50%);
+      width:90%; height:44px;
+      display:flex; justify-content:space-between;
+      padding:0 10px;
+    }
+    .t{
+      width:6px; height:46px;
+      border-radius: 999px;
+      background: linear-gradient(180deg, rgba(110,231,255,.25), rgba(167,139,250,.16), transparent 90%);
+      border: 1px solid rgba(255,255,255,.08);
+      animation: wiggle 2.2s ease-in-out infinite;
+      transform-origin: top;
+      opacity:.9;
+    }
+    .t:nth-child(2){animation-delay:.25s}
+    .t:nth-child(3){animation-delay:.5s}
+    .t:nth-child(4){animation-delay:.1s}
+    @keyframes wiggle{
+      0%,100%{ transform: rotate(-5deg) }
+      50%{ transform: rotate(7deg) }
+    }
+    @keyframes floatUp{
+      from{ transform: translate3d(0, 120vh, 0) rotate(0deg); }
+      to  { transform: translate3d(0, -30vh, 0) rotate(8deg); }
     }
 
-    .lead{font-size:14px; color:var(--mut); line-height:1.6; margin:0 0 12px}
-    label{display:block; font-size:12px; color:var(--mut); margin:10px 0 6px}
+    /* Optional: real GIF overlay (put your gifs in /assets if you want) */
+    .gif-jelly{
+      position:absolute;
+      width:84px; height:84px;
+      opacity:.55;
+      pointer-events:none;
+      animation: floatUp linear infinite;
+      filter: drop-shadow(0 16px 22px rgba(0,0,0,.35));
+      border-radius: 18px;
+      mix-blend-mode: screen;
+    }
+
+    /* ===== Layout ===== */
+    .wrap{max-width:1040px; margin:0 auto; padding:26px 16px 70px}
+    header{
+      display:flex; gap:14px;
+      align-items:center; justify-content:space-between; flex-wrap:wrap;
+      margin-bottom:14px;
+    }
+    .brand{display:flex; gap:12px; align-items:center}
+    .logo{
+      width:48px; height:48px; border-radius:18px;
+      background:
+        radial-gradient(circle at 25% 25%, rgba(110,231,255,.95), rgba(110,231,255,.25) 45%, rgba(167,139,250,.18) 75%, rgba(255,255,255,.06));
+      border:1px solid rgba(255,255,255,.16);
+      box-shadow: 0 0 0 1px rgba(110,231,255,.10), 0 0 44px rgba(110,231,255,.18);
+      position:relative;
+    }
+    .logo:after{
+      content:"";
+      position:absolute; right:10px; top:10px;
+      width:10px; height:10px; border-radius:50%;
+      background:rgba(255,255,255,.62);
+      opacity:.8;
+    }
+    h1{margin:0; font-size:18px}
+    .tag{color:var(--mut); font-size:13px; margin-top:2px}
+    .pill{
+      padding:8px 10px;
+      border-radius:999px;
+      border:1px solid var(--br);
+      background: rgba(255,255,255,.05);
+      color: var(--mut);
+      font-size:12px;
+      backdrop-filter: blur(6px);
+    }
+
+    main{display:grid; grid-template-columns: 1.15fr .85fr; gap:14px}
+    @media (max-width:900px){ main{grid-template-columns:1fr} }
+
+    .card{
+      border:1px solid var(--br);
+      background: linear-gradient(180deg, var(--card), var(--card2));
+      border-radius: var(--radius);
+      box-shadow: 0 14px 55px var(--shadow);
+      padding:16px;
+      position:relative;
+      overflow:hidden;
+      backdrop-filter: blur(10px);
+    }
+    .card:before{
+      content:""; position:absolute; inset:-1px;
+      background: radial-gradient(760px 220px at 10% 0%, rgba(110,231,255,.18), transparent 60%);
+      pointer-events:none;
+      opacity:.85;
+    }
+    .hero{
+      padding:18px 16px;
+      border-radius: var(--radius);
+      border:1px solid rgba(255,255,255,.16);
+      background:
+        radial-gradient(700px 260px at 15% 10%, rgba(110,231,255,.20), transparent 60%),
+        radial-gradient(620px 240px at 85% 30%, rgba(167,139,250,.18), transparent 58%),
+        linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.04));
+      box-shadow: 0 12px 45px rgba(0,0,0,.35);
+      position:relative;
+      overflow:hidden;
+    }
+    .hero h2{margin:0 0 6px; font-size:18px}
+    .hero p{margin:0; color:var(--mut); font-size:13px; line-height:1.65}
+    .hero .spark{
+      position:absolute; right:-30px; top:-30px;
+      width:140px; height:140px; border-radius:50%;
+      background: radial-gradient(circle at 40% 40%, rgba(110,231,255,.35), transparent 70%);
+      filter: blur(2px);
+      opacity:.9;
+    }
+
+    label{display:block; font-size:12px; color:var(--mut); margin:12px 0 6px}
     input[type="url"]{
       width:100%;
       padding:12px 12px;
-      border-radius:14px;
-      border:1px solid var(--br);
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,.18);
       outline:none;
-      background:rgba(0,0,0,.22);
-      color:var(--txt);
+      background: rgba(0,0,0,.22);
+      color: var(--txt);
       font-size:14px;
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,.12);
     }
     input[type="url"]::placeholder{color:rgba(255,255,255,.38)}
+    input[type="url"]:focus{
+      border-color: rgba(110,231,255,.42);
+      box-shadow: 0 0 0 3px rgba(110,231,255,.10);
+    }
+
     .row{display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-top:10px}
     button, a.btn{
-      appearance:none; border:1px solid var(--br);
+      appearance:none;
+      border:1px solid rgba(255,255,255,.18);
       background: rgba(255,255,255,.06);
-      color:var(--txt);
+      color: var(--txt);
       padding:10px 12px;
-      border-radius:14px;
+      border-radius:16px;
       font-size:14px;
       cursor:pointer;
       text-decoration:none;
       display:inline-flex;
       align-items:center;
       gap:8px;
-      transition: transform .06s ease, background .2s ease, border-color .2s ease;
+      transition: transform .06s ease, background .2s ease, border-color .2s ease, box-shadow .2s ease;
       user-select:none;
+      backdrop-filter: blur(8px);
     }
-    button:hover, a.btn:hover{background: rgba(255,255,255,.09); border-color: rgba(255,255,255,.22)}
+    button:hover, a.btn:hover{
+      background: rgba(255,255,255,.10);
+      border-color: rgba(255,255,255,.26);
+    }
     button:active, a.btn:active{transform: translateY(1px)}
     .primary{
-      border-color: rgba(110,231,255,.45);
-      background: linear-gradient(180deg, rgba(110,231,255,.16), rgba(255,255,255,.06));
-      box-shadow: 0 0 0 1px rgba(110,231,255,.12), 0 0 30px rgba(110,231,255,.12);
+      border-color: rgba(110,231,255,.50);
+      background:
+        radial-gradient(240px 120px at 20% 20%, rgba(110,231,255,.18), transparent 55%),
+        linear-gradient(180deg, rgba(110,231,255,.16), rgba(255,255,255,.06));
+      box-shadow: 0 0 0 1px rgba(110,231,255,.14), 0 0 30px rgba(110,231,255,.14);
     }
-    .danger{opacity:.9}
+    .pink{
+      border-color: rgba(251,113,133,.40);
+      background:
+        radial-gradient(240px 120px at 20% 20%, rgba(251,113,133,.18), transparent 55%),
+        linear-gradient(180deg, rgba(251,113,133,.14), rgba(255,255,255,.06));
+      box-shadow: 0 0 0 1px rgba(251,113,133,.12), 0 0 28px rgba(251,113,133,.12);
+    }
+    .ghost{opacity:.9}
     .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Noto Sans Mono", "Courier New", monospace; font-size:12px}
-    .hint{font-size:12px; color:var(--mut); margin-top:10px; line-height:1.6}
+    .hint{font-size:12px; color:var(--mut); margin-top:10px; line-height:1.65}
     .status{
       margin-top:12px;
-      padding:10px 12px;
-      border-radius:16px;
-      border:1px dashed rgba(255,255,255,.18);
+      padding:12px 12px;
+      border-radius:18px;
+      border:1px dashed rgba(255,255,255,.20);
       background: rgba(0,0,0,.18);
       color: var(--mut);
       font-size:13px;
-      line-height:1.6;
+      line-height:1.65;
     }
     .status strong{color:var(--txt)}
     .ok{color:var(--ok)}
+    .warn{color:var(--warn)}
+    .mini{
+      font-size:12px;
+      color: var(--mut2);
+      margin-top:8px;
+      line-height:1.6;
+    }
     .list{
       margin:10px 0 0;
       padding:0 0 0 18px;
       color:var(--mut);
       font-size:13px;
-      line-height:1.7;
+      line-height:1.75;
     }
-    footer{margin-top:14px; color:rgba(255,255,255,.45); font-size:12px}
-    .smalllink{color:rgba(110,231,255,.85)}
+    footer{margin-top:12px; color:rgba(255,255,255,.45); font-size:12px}
+
+    /* ===== Modal ===== */
+    .modal-backdrop{
+      position:fixed; inset:0; display:none;
+      background: rgba(0,0,0,.55);
+      backdrop-filter: blur(6px);
+      z-index: 50;
+      align-items:center;
+      justify-content:center;
+      padding: 18px;
+    }
+    .modal{
+      width: min(720px, 100%);
+      border-radius: 24px;
+      border:1px solid rgba(255,255,255,.18);
+      background:
+        radial-gradient(720px 280px at 20% 0%, rgba(110,231,255,.18), transparent 60%),
+        radial-gradient(600px 240px at 90% 40%, rgba(167,139,250,.14), transparent 60%),
+        linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.04));
+      box-shadow: 0 24px 90px rgba(0,0,0,.6);
+      padding: 16px;
+      position:relative;
+      overflow:hidden;
+    }
+    .modal h3{margin:0 0 6px; font-size:16px}
+    .modal p{margin:0 0 10px; color:var(--mut); font-size:13px; line-height:1.7}
+    .close{
+      position:absolute; right:12px; top:12px;
+      width:36px; height:36px;
+      border-radius: 14px;
+      border:1px solid rgba(255,255,255,.16);
+      background: rgba(255,255,255,.06);
+      cursor:pointer;
+      display:flex; align-items:center; justify-content:center;
+    }
+    .close:hover{background:rgba(255,255,255,.10)}
+    .toast{
+      position: fixed;
+      left: 50%;
+      bottom: 18px;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,.35);
+      border:1px solid rgba(255,255,255,.16);
+      border-radius: 999px;
+      padding: 10px 12px;
+      color: rgba(255,255,255,.86);
+      font-size: 13px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 12px 40px rgba(0,0,0,.35);
+      display:none;
+      z-index: 60;
+    }
+    .kbd{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Noto Sans Mono", "Courier New", monospace;
+      font-size: 12px;
+      padding: 2px 6px;
+      border-radius: 8px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      color: rgba(255,255,255,.82);
+    }
+
+    /* Reduce motion */
+    @media (prefers-reduced-motion: reduce){
+      .bg, .waves, .jelly, .gif-jelly { animation: none !important; }
+      button, a.btn { transition: none !important; }
+    }
   </style>
 </head>
 
 <body>
-  <div class="bg-bubbles"></div>
+  <div class="waves"></div>
+  <div class="bg"></div>
+
+  <!-- Jellyfish background (CSS) -->
+  <div class="jelly-swarm" id="swarm" aria-hidden="true"></div>
 
   <div class="wrap">
     <header>
       <div class="brand">
         <div class="logo" aria-hidden="true"></div>
         <div>
-          <h1>Playlist Bridge <span class="pill">β</span></h1>
-          <div class="tag">プレイリストURL → 相手のアプリにインポート（②）＋ そのまま開く（①）</div>
+          <h1>Playlist Bridge <span class="pill">deep-sea pop ✨</span></h1>
+          <div class="tag">② 相手のアプリに“同じプレイリストを作る”を軸に、① “そのまま開く”も保険で。</div>
         </div>
       </div>
       <div class="pill">GitHub Pages / 1ページ / 無料運用</div>
     </header>
 
-    <main>
-      <section class="card">
-        <p class="lead">
-          プレイリストのURLを貼ってね。<br/>
-          メインは <strong>相手が自分のアプリにインポートできる共有</strong>（TuneMyMusic導線）。保険で各アプリの「そのまま開く」も出す。
-        </p>
+    <div class="hero">
+      <div class="spark"></div>
+      <h2>URL貼るだけ。あとは“移住”させる。</h2>
+      <p>
+        ここにプレイリストURL → <strong>②</strong>でTuneMyMusicへ最短で流す（相手は自分の音楽サービスにインポート）。<br/>
+        とりあえず聴く用に<strong>①</strong>の各アプリボタンも置いとく。クラゲは…増やしといた 🪼
+      </p>
+    </div>
 
+    <main style="margin-top:14px;">
+      <section class="card">
         <label for="plUrl">プレイリストURL（Apple Music / Spotify / YouTube Music）</label>
-        <input id="plUrl" type="url" placeholder="例: https://open.spotify.com/playlist/..." autocomplete="off" />
+        <input id="plUrl" type="url" placeholder="例: https://open.spotify.com/playlist/... / https://music.apple.com/... / https://music.youtube.com/playlist?list=..." autocomplete="off" />
 
         <div class="row">
-          <button class="primary" id="btnBuild">共有リンクを作る</button>
-          <button class="danger" id="btnClear">クリア</button>
-          <button id="btnDemo">デモ入力</button>
+          <button class="primary" id="btnBuild">リンク生成する</button>
+          <button class="ghost" id="btnClear">クリア</button>
+          <button class="ghost" id="btnDemo">デモ</button>
         </div>
 
         <div id="status" class="status">
-          状態：まだURLが入ってないよ。まず貼って〜
+          状態：まだURLが入ってないよ。貼って <span class="kbd">Enter</span> でもOK。
         </div>
 
         <div class="row" id="actions" style="display:none; margin-top:12px;">
-          <a class="btn primary" id="btnTMM" href="#" target="_blank" rel="noopener">② TuneMyMusicでインポート</a>
+          <!-- ② Main -->
+          <button class="primary" id="btnHow">② 自分の音楽アプリにプレイリストを作る</button>
+          <button class="pink" id="btnCopyShare">共有リンクをコピー（このサイト）</button>
+
+          <!-- ① Backup -->
           <a class="btn" id="btnOpen" href="#" target="_blank" rel="noopener">① 元URLを開く</a>
-          <a class="btn" id="btnApple" href="#" target="_blank" rel="noopener">Apple Musicで開く</a>
-          <a class="btn" id="btnSpotify" href="#" target="_blank" rel="noopener">Spotifyで開く</a>
-          <a class="btn" id="btnYTM" href="#" target="_blank" rel="noopener">YouTube Musicで開く</a>
+          <a class="btn" id="btnApple" href="#" target="_blank" rel="noopener">Apple Music</a>
+          <a class="btn" id="btnSpotify" href="#" target="_blank" rel="noopener">Spotify</a>
+          <a class="btn" id="btnYTM" href="#" target="_blank" rel="noopener">YouTube Music</a>
         </div>
 
         <div class="hint">
-          <strong class="ok">②の使い方</strong>：TuneMyMusicが「共有用のカスタムURLを生成して、友達が自分の音楽プラットフォームにインポートできる」方式を提供してる :contentReference[oaicite:1]{index=1}。<br/>
-          ※このβ版は “自動生成” じゃなくて、TuneMyMusicへ<strong>最短導線</strong>で渡す実装（確実に動くやつ）。
+          <strong class="ok">②の中身：</strong>
+          TuneMyMusicの「Share playlists between music services」機能は、プレイリストをアップロードすると共有ページを作れて、
+          友達は「元のプレイリストを開く」か「自分のライブラリへインポート」できる仕組み。 :contentReference[oaicite:1]{index=1}
+          <div class="mini">
+            ※このサイトはログイン情報を扱わない（安心設計）。URLをコピー＆案内するだけ。
+          </div>
         </div>
       </section>
 
       <aside class="card">
-        <h2 style="margin:0 0 8px; font-size:16px;">相手側の流れ（②の体験）</h2>
+        <h3 style="margin:0 0 8px; font-size:16px;">相手がやること（②）</h3>
         <ol class="list">
           <li>あなたがこのページでURLを貼る</li>
-          <li><strong>「② TuneMyMusicでインポート」</strong>を押す</li>
-          <li>TuneMyMusicで「ソース（元サービス）」を選ぶ → URLを貼る</li>
-          <li>相手が「転送先サービス（自分のアプリ）」でログインして許可</li>
-          <li>相手のアプリに新しいプレイリストが作られる</li>
+          <li><strong>「② 自分の音楽アプリにプレイリストを作る」</strong>を押す</li>
+          <li>TuneMyMusicでソース（元サービス）を選ぶ → URL貼る</li>
+          <li>相手が転送先サービスでログインして許可</li>
+          <li>相手のアプリに新しいプレイリストができる</li>
         </ol>
 
         <div class="status" style="margin-top:12px;">
-          <strong>注意（でも安心）</strong><br/>
-          このサイトはログイン情報を扱わない。貼ったURLを元に、外部サービスに誘導するだけ。<br/>
-          “安全で壊れにくい”を最優先にしてる。
+          <strong>プチTips</strong><br/>
+          「共有リンクをコピー（このサイト）」を送れば、相手は開いた瞬間にURLが入った状態でスタートできる（手間減る）。
         </div>
 
-        <p class="hint">
-          TuneMyMusicの共有の考え方（「カスタムURLを生成」「友達が自分の音楽プラットフォームにインポート可能」） :contentReference[oaicite:2]{index=2}
-        </p>
-
         <footer>
-          つくり：深海っぽく静かにキラッ…（でも文章は真面目）<br/>
-          β版：改善ポイントはどんどん足せる
+          🪼クラゲ増量中：もし“本物のGIF”も使いたければ、<span class="mono">/assets</span>に置いて参戦させられる（下で自動で試す）。
         </footer>
       </aside>
     </main>
   </div>
+
+  <!-- Modal -->
+  <div class="modal-backdrop" id="modalBackdrop" role="dialog" aria-modal="true" aria-label="TuneMyMusic guide">
+    <div class="modal">
+      <button class="close" id="btnClose" aria-label="close">✕</button>
+      <h3>② TuneMyMusicで“同じプレイリスト”を作る（最短手順）</h3>
+      <p>
+        いま貼ったURLは <strong>クリップボードにコピー</strong>してあるよ。TuneMyMusicへ行って、貼り付けて進めてね。
+      </p>
+
+      <div class="row" style="margin-top:10px;">
+        <a class="btn primary" id="btnTMMShare" href="https://www.tunemymusic.com/features/share" target="_blank" rel="noopener">
+          TuneMyMusicのShareを開く
+        </a>
+        <a class="btn" id="btnTMMTransfer" href="https://www.tunemymusic.com/" target="_blank" rel="noopener">
+          TuneMyMusicトップ（Transfer）
+        </a>
+        <button class="btn pink" id="btnCopyURL">URLをもう一回コピー</button>
+      </div>
+
+      <div class="status" style="margin-top:12px;">
+        <strong>貼り付け先：</strong> TuneMyMusic側で「Upload your music by copying the playlist link …」の流れでOK。 :contentReference[oaicite:2]{index=2}
+        <div class="mini">
+          <span class="warn">注意：</span> TuneMyMusicにURLを“自動注入”する公式パラメータは公開仕様として確証が取れなかったので、
+          あえて「確実に動く最短導線」にしてる（壊れにくい）。
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">コピーしたよ</div>
 
 <script>
 (function(){
@@ -228,12 +504,101 @@
   const btnClear = document.getElementById('btnClear');
   const btnDemo  = document.getElementById('btnDemo');
 
-  const btnTMM   = document.getElementById('btnTMM');
+  const btnHow = document.getElementById('btnHow');
+  const btnCopyShare = document.getElementById('btnCopyShare');
+
   const btnOpen  = document.getElementById('btnOpen');
   const btnApple = document.getElementById('btnApple');
   const btnSpotify = document.getElementById('btnSpotify');
   const btnYTM   = document.getElementById('btnYTM');
 
+  const modalBackdrop = document.getElementById('modalBackdrop');
+  const btnClose = document.getElementById('btnClose');
+  const btnTMMShare = document.getElementById('btnTMMShare');
+  const btnTMMTransfer = document.getElementById('btnTMMTransfer');
+  const btnCopyURL = document.getElementById('btnCopyURL');
+
+  const toast = document.getElementById('toast');
+
+  // === Jellyfish generation (lots) ===
+  const swarm = document.getElementById('swarm');
+  function rand(min, max){ return Math.random() * (max - min) + min; }
+
+  function createJelly(xPct, size){
+    const d = document.createElement('div');
+    d.className = 'jelly';
+    d.style.left = xPct + '%';
+    d.style.width = size + 'px';
+    d.style.height = Math.round(size * 1.25) + 'px';
+
+    const dur = rand(16, 36);
+    const delay = rand(-dur, 0);
+    d.style.animationDuration = dur + 's';
+    d.style.animationDelay = delay + 's';
+    d.style.opacity = rand(0.35, 0.95);
+    d.style.filter = 'drop-shadow(0 14px 20px rgba(0,0,0,.35)) blur(' + rand(0, 0.6) + 'px)';
+
+    const bell = document.createElement('div');
+    bell.className = 'bell';
+    const tent = document.createElement('div');
+    tent.className = 'tentacles';
+    for(let i=0;i<4;i++){
+      const t = document.createElement('div');
+      t.className = 't';
+      t.style.height = Math.round(size * rand(0.45, 0.7)) + 'px';
+      t.style.opacity = rand(0.55, 0.95);
+      tent.appendChild(t);
+    }
+    d.appendChild(bell);
+    d.appendChild(tent);
+    return d;
+  }
+
+  function seedSwarm(){
+    // CSS jellyfish (always works)
+    const count = window.matchMedia('(max-width: 900px)').matches ? 14 : 22;
+    swarm.innerHTML = '';
+    for(let i=0;i<count;i++){
+      const x = rand(3, 97);
+      const size = rand(44, 92);
+      swarm.appendChild(createJelly(x, size));
+    }
+
+    // OPTIONAL: real GIF jellyfish (if user places files in /assets)
+    // Put your gifs here:
+    const gifPaths = [
+      'assets/jelly1.gif',
+      'assets/jelly2.gif',
+      'assets/jelly3.gif',
+      'assets/jelly4.gif'
+    ];
+
+    // We'll try to add a few; if 404, browser just won't show them (no harm).
+    const gifCount = window.matchMedia('(max-width: 900px)').matches ? 4 : 7;
+    for(let i=0;i<gifCount;i++){
+      const img = document.createElement('img');
+      img.className = 'gif-jelly';
+      img.src = gifPaths[i % gifPaths.length];
+      img.alt = '';
+      img.style.left = rand(0, 100) + '%';
+      img.style.width = rand(60, 110) + 'px';
+      img.style.height = 'auto';
+      const dur = rand(18, 44);
+      img.style.animationDuration = dur + 's';
+      img.style.animationDelay = rand(-dur, 0) + 's';
+      img.style.opacity = rand(0.18, 0.55);
+      swarm.appendChild(img);
+    }
+  }
+  seedSwarm();
+  window.addEventListener('resize', ()=>{ seedSwarm(); }, {passive:true});
+
+  // === Utils ===
+  function escapeHtml(s){
+    return s.replace(/[&<>"']/g, c => ({
+      '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'
+    }[c]));
+  }
   function safeURL(u){
     try{
       const url = new URL(u);
@@ -243,45 +608,71 @@
       return null;
     }
   }
-
   function detectPlatform(u){
-    // rough detection
     const url = new URL(u);
     const host = url.hostname.toLowerCase();
 
-    // Spotify: open.spotify.com/playlist/{id} など
     if(host.includes('spotify.com')) return 'spotify';
-
-    // Apple Music: music.apple.com/xx/playlist/.../pl.{id} など
     if(host.includes('music.apple.com')) return 'apple';
-
-    // YouTube Music: music.youtube.com/playlist?list=... など
     if(host.includes('music.youtube.com')) return 'ytm';
-
-    // YouTube playlist: youtube.com/playlist?list=...
     if(host.includes('youtube.com') && url.pathname.includes('/playlist')) return 'ytm';
-
     return 'unknown';
   }
 
+  function toastShow(msg){
+    toast.textContent = msg;
+    toast.style.display = 'block';
+    clearTimeout(toast._t);
+    toast._t = setTimeout(()=>{ toast.style.display = 'none'; }, 1800);
+  }
+
+  async function copyText(txt){
+    try{
+      await navigator.clipboard.writeText(txt);
+      toastShow('コピーしたよ');
+      return true;
+    }catch(e){
+      // fallback
+      const ta = document.createElement('textarea');
+      ta.value = txt;
+      ta.style.position = 'fixed';
+      ta.style.left = '-9999px';
+      document.body.appendChild(ta);
+      ta.select();
+      try{
+        document.execCommand('copy');
+        toastShow('コピーしたよ');
+        document.body.removeChild(ta);
+        return true;
+      }catch(_){
+        document.body.removeChild(ta);
+        toastShow('コピー失敗（手動でコピーしてね）');
+        return false;
+      }
+    }
+  }
+
+  function setOGUrlIfEmpty(){
+    const og = document.querySelector('meta[property="og:url"]');
+    if(og && (!og.getAttribute('content') || og.getAttribute('content') === '')){
+      og.setAttribute('content', location.origin + location.pathname);
+    }
+  }
+  setOGUrlIfEmpty();
+
+  // === Main build ===
   function buildLinks(u){
     const platform = detectPlatform(u);
 
-    // ① 元URLそのまま
+    // ① Original
     btnOpen.href = u;
 
-    // ① 各アプリ用：判定できる場合はそのボタンだけ強める
-    btnApple.href = (platform === 'apple') ? u : 'https://music.apple.com/';
-    btnSpotify.href = (platform === 'spotify') ? u : 'https://open.spotify.com/';
-    btnYTM.href = (platform === 'ytm') ? u : 'https://music.youtube.com/';
+    // ① Per-service
+    btnApple.href  = (platform === 'apple')  ? u : 'https://music.apple.com/';
+    btnSpotify.href= (platform === 'spotify')? u : 'https://open.spotify.com/';
+    btnYTM.href    = (platform === 'ytm')    ? u : 'https://music.youtube.com/';
 
-    // ② TuneMyMusic導線（確実版）
-    // ここは「TMMトップを開いて、URL貼る」でもいいが、共有FAQも読めるようにしておく
-    // まずはトップへ（URL自動注入は公式仕様を確定できてないのでやらない）
-    btnTMM.href = 'https://www.tunemymusic.com/';
-    btnTMM.dataset.source = platform;
-
-    let pLabel = ({
+    const pLabel = ({
       apple:'Apple Music',
       spotify:'Spotify',
       ytm:'YouTube Music',
@@ -290,28 +681,31 @@
 
     status.innerHTML =
       '検出：<strong>' + pLabel + '</strong><br/>' +
-      '②は <strong>TuneMyMusic</strong> を開いて、ソース選択→このURLを貼って進めてね。<br/>' +
+      '次は <strong>②</strong> を押すだけ。URLは自動でコピーするよ。<br/>' +
       '<span class="mono">' + escapeHtml(u) + '</span>';
 
     actions.style.display = 'flex';
 
-    // ちょい親切：URLを自動でクリップボードにコピーしておく（失敗しても無視）
-    navigator.clipboard?.writeText(u).then(()=>{
-      status.innerHTML += '<br/><span class="ok">（URLはクリップボードにもコピーしたよ）</span>';
-    }).catch(()=>{});
+    // Auto copy playlist URL for TMM flow
+    copyText(u);
+
+    // Save current
+    window.__PB = { playlistUrl: u, platform };
   }
 
-  function escapeHtml(s){
-    return s.replace(/[&<>"']/g, c => ({
-      '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'
-    }[c]));
+  function openModal(){
+    modalBackdrop.style.display = 'flex';
+  }
+  function closeModal(){
+    modalBackdrop.style.display = 'none';
   }
 
+  // === Event handlers ===
   btnBuild.addEventListener('click', ()=>{
     const u = safeURL(elUrl.value.trim());
     if(!u){
       actions.style.display = 'none';
-      status.textContent = 'URLが正しくないっぽい。https:// から始まるプレイリストURLを貼ってね。';
+      status.innerHTML = '<span class="warn">URLが正しくないっぽい。</span> https:// から始まるプレイリストURLを貼ってね。';
       return;
     }
     buildLinks(u);
@@ -322,18 +716,62 @@
     actions.style.display = 'none';
     status.textContent = '状態：クリアしたよ。URL貼って〜';
     elUrl.focus();
+    window.__PB = null;
   });
 
   btnDemo.addEventListener('click', ()=>{
-    // Spotify公式っぽい形式例（実際のIDはダミー）
     elUrl.value = 'https://open.spotify.com/playlist/37i9dQZF1DXcBWIGoYBM5M';
     btnBuild.click();
   });
 
-  // Enterでも実行
   elUrl.addEventListener('keydown', (e)=>{
     if(e.key === 'Enter') btnBuild.click();
   });
+
+  // ② button: show instructions and open TMM share page option
+  btnHow.addEventListener('click', ()=>{
+    if(!window.__PB?.playlistUrl){
+      toastShow('まずURLを貼ってね');
+      return;
+    }
+    // ensure copied
+    copyText(window.__PB.playlistUrl);
+    openModal();
+  });
+
+  btnClose.addEventListener('click', closeModal);
+  modalBackdrop.addEventListener('click', (e)=>{
+    if(e.target === modalBackdrop) closeModal();
+  });
+
+  btnCopyURL.addEventListener('click', ()=>{
+    if(window.__PB?.playlistUrl) copyText(window.__PB.playlistUrl);
+  });
+
+  // Share link of THIS site (prefilled url)
+  btnCopyShare.addEventListener('click', async ()=>{
+    const u = window.__PB?.playlistUrl;
+    if(!u){ toastShow('まずURLを貼ってね'); return; }
+    const shareUrl = location.origin + location.pathname + '?url=' + encodeURIComponent(u);
+    await copyText(shareUrl);
+    status.innerHTML =
+      '<strong class="ok">共有リンクをコピーしたよ。</strong><br/>' +
+      '相手にこのURLを送れば、開いた瞬間にプレイリストURLが入力済みになる。<br/>' +
+      '<span class="mono">' + escapeHtml(shareUrl) + '</span>';
+  });
+
+  // Prefill from ?url=
+  (function prefill(){
+    const params = new URLSearchParams(location.search);
+    const u = params.get('url');
+    if(!u) return;
+    const safe = safeURL(u);
+    if(!safe) return;
+    elUrl.value = safe;
+    buildLinks(safe);
+    toastShow('URLを自動入力したよ');
+  })();
+
 })();
 </script>
 </body>
